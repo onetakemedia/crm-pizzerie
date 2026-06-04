@@ -1,0 +1,1266 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CRM Pizzerie</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ef;
+      --surface: #ffffff;
+      --surface-2: #f0eee8;
+      --ink: #1f2328;
+      --muted: #646b73;
+      --line: #d9d5cc;
+      --brand: #1e7a57;
+      --brand-dark: #13583e;
+      --accent: #c43d2e;
+      --amber: #d89028;
+      --blue: #3867a6;
+      --shadow: 0 10px 30px rgba(31, 35, 40, 0.08);
+      --radius: 8px;
+      --focus: 0 0 0 3px rgba(30, 122, 87, 0.22);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: none;
+      box-shadow: var(--focus);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      background: #20252b;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 46px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 4px;
+      color: #b8c0c8;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 9px 11px;
+      border-radius: var(--radius);
+      color: #dbe2e8;
+      background: transparent;
+      text-align: left;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .nav .ico {
+      width: 22px;
+      text-align: center;
+      font-weight: 800;
+      color: #f1c27b;
+    }
+
+    .sidebar-tools {
+      margin-top: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .ghost-dark {
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      background: transparent;
+      color: #fff;
+    }
+
+    .ghost-dark:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    main {
+      min-width: 0;
+      padding: 26px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .title h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 9px 13px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: var(--brand);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: var(--brand-dark); }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .btn.secondary:hover { background: var(--surface-2); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 160px 160px 160px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 0.9fr) minmax(380px, 1.1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfaf7;
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .list {
+      display: grid;
+      max-height: calc(100vh - 330px);
+      min-height: 430px;
+      overflow: auto;
+    }
+
+    .lead {
+      display: grid;
+      gap: 8px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      text-align: left;
+    }
+
+    .lead:hover,
+    .lead.active {
+      background: #f6fbf8;
+    }
+
+    .lead.active {
+      border-left: 4px solid var(--brand);
+      padding-left: 12px;
+    }
+
+    .lead-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .lead h4 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .lead p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: #3f454b;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .tag.hot { background: #ffe7df; color: #8d2b20; }
+    .tag.warm { background: #fff0d6; color: #7a4b05; }
+    .tag.cold { background: #e8eef8; color: #254c82; }
+    .tag.ok { background: #e0f2e9; color: #16543d; }
+    .tag.todo { background: #fff6dc; color: #775200; }
+
+    .detail {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .empty {
+      padding: 44px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .detail-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .detail-top h3 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .detail-top p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick a,
+    .quick button {
+      display: grid;
+      place-items: center;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .quick a:hover,
+    .quick button:hover {
+      background: var(--surface-2);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .info {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fff;
+    }
+
+    .info small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info strong {
+      display: block;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note {
+      border-left: 3px solid var(--brand);
+      padding: 10px 12px;
+      background: #f8fbf9;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .note time {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .wide { grid-column: 1 / -1; }
+
+    dialog {
+      width: min(920px, calc(100vw - 28px));
+      border: 0;
+      border-radius: var(--radius);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+      padding: 0;
+    }
+
+    dialog::backdrop {
+      background: rgba(20, 24, 28, 0.55);
+    }
+
+    .modal-head,
+    .modal-foot {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfaf7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-foot {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+      justify-content: flex-end;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 16px;
+      max-height: min(72vh, 720px);
+      overflow: auto;
+    }
+
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      font-weight: 900;
+    }
+
+    .icon-btn:hover { background: var(--surface-2); }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      max-width: min(420px, calc(100vw - 36px));
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: #20252b;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        padding: 14px;
+      }
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .sidebar-tools {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      main { padding: 18px; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .list { max-height: none; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar,
+      .detail-top {
+        flex-direction: column;
+      }
+      .actions,
+      .sidebar-tools {
+        width: 100%;
+      }
+      .actions .btn,
+      .sidebar-tools button {
+        flex: 1 1 auto;
+      }
+      .stats,
+      .toolbar,
+      .info-grid,
+      .quick,
+      .form-grid,
+      .nav {
+        grid-template-columns: 1fr;
+      }
+      main { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">P</div>
+        <div>
+          <h1>CRM Pizzerie</h1>
+          <span>Lead, follow-up e note</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Sezioni">
+        <button class="active" data-view="all"><span class="ico">T</span>Tutte</button>
+        <button data-view="todo"><span class="ico">A</span>Da contattare</button>
+        <button data-view="won"><span class="ico">V</span>Clienti</button>
+      </nav>
+
+      <div class="sidebar-tools">
+        <button class="ghost-dark" id="importBtn">Importa JSON</button>
+        <button class="ghost-dark" id="resetBtn">Ripristina demo</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div class="title">
+          <h2>Pipeline commerciale</h2>
+          <p>Gestisci pizzerie, stato trattativa, valore stimato e prossime azioni da un'unica schermata.</p>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="exportCsvBtn">Esporta CSV</button>
+          <button class="btn secondary" id="exportJsonBtn">Backup JSON</button>
+          <button class="btn" id="newLeadBtn">Nuova pizzeria</button>
+        </div>
+      </header>
+
+      <section class="stats" aria-label="Riepilogo">
+        <div class="stat"><small>Pizzerie</small><strong id="statTotal">0</strong></div>
+        <div class="stat"><small>Da contattare</small><strong id="statTodo">0</strong></div>
+        <div class="stat"><small>Clienti</small><strong id="statWon">0</strong></div>
+        <div class="stat"><small>Valore pipeline</small><strong id="statValue">0</strong></div>
+      </section>
+
+      <section class="toolbar" aria-label="Filtri">
+        <div class="field">
+          <label for="searchInput">Cerca</label>
+          <input id="searchInput" type="search" placeholder="Nome, citta, contatto, note">
+        </div>
+        <div class="field">
+          <label for="statusFilter">Stato</label>
+          <select id="statusFilter"></select>
+        </div>
+        <div class="field">
+          <label for="priorityFilter">Priorita</label>
+          <select id="priorityFilter">
+            <option value="">Tutte</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Bassa">Bassa</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sortSelect">Ordina</label>
+          <select id="sortSelect">
+            <option value="next">Prossima azione</option>
+            <option value="name">Nome</option>
+            <option value="value">Valore</option>
+            <option value="updated">Ultima modifica</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="layout">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Lista pizzerie</h3>
+            <span class="tag" id="resultCount">0 risultati</span>
+          </div>
+          <div class="list" id="leadList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Scheda contatto</h3>
+            <button class="btn secondary" id="editLeadBtn">Modifica</button>
+          </div>
+          <div class="detail" id="leadDetail"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="leadDialog">
+    <form id="leadForm" method="dialog">
+      <div class="modal-head">
+        <h3 id="dialogTitle">Nuova pizzeria</h3>
+        <button class="icon-btn" value="cancel" type="button" id="closeDialogBtn" aria-label="Chiudi">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <input type="hidden" id="leadId">
+          <div class="field">
+            <label for="name">Nome pizzeria</label>
+            <input id="name" required placeholder="Es. Napoli Centrale">
+          </div>
+          <div class="field">
+            <label for="city">Citta</label>
+            <input id="city" placeholder="Es. Milano">
+          </div>
+          <div class="field">
+            <label for="contact">Referente</label>
+            <input id="contact" placeholder="Nome referente">
+          </div>
+          <div class="field">
+            <label for="phone">Telefono</label>
+            <input id="phone" placeholder="+39 ...">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="nome@pizzeria.it">
+          </div>
+          <div class="field">
+            <label for="website">Sito o social</label>
+            <input id="website" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label for="status">Stato</label>
+            <select id="status"></select>
+          </div>
+          <div class="field">
+            <label for="priority">Priorita</label>
+            <select id="priority">
+              <option>Alta</option>
+              <option>Media</option>
+              <option>Bassa</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="value">Valore stimato EUR</label>
+            <input id="value" type="number" min="0" step="50" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="nextAction">Prossima azione</label>
+            <input id="nextAction" type="date">
+          </div>
+          <div class="field wide">
+            <label for="need">Esigenza</label>
+            <input id="need" placeholder="Es. gestionale ordini, prenotazioni, marketing">
+          </div>
+          <div class="field wide">
+            <label for="notes">Note</label>
+            <textarea id="notes" placeholder="Ultimo contatto, obiezioni, preferenze, promemoria"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn secondary" type="button" id="deleteLeadBtn">Elimina</button>
+        <button class="btn secondary" type="button" id="cancelFormBtn">Annulla</button>
+        <button class="btn" type="submit">Salva</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input class="hidden-file" id="importFile" type="file" accept="application/json">
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "crm-pizzerie-v2";
+    const statuses = [
+      "Nuovo lead",
+      "Da contattare",
+      "Contattato",
+      "Preventivo inviato",
+      "Negoziazione",
+      "Cliente",
+      "Perso"
+    ];
+
+    const demoLeads = [
+      {
+        id: crypto.randomUUID(),
+        name: "Pizzeria Vesuvio",
+        city: "Torino",
+        contact: "Marco Esposito",
+        phone: "+39 011 555 0189",
+        email: "marco@vesuvio.example",
+        website: "https://vesuvio.example",
+        status: "Preventivo inviato",
+        priority: "Alta",
+        value: 2400,
+        nextAction: nextDate(1),
+        need: "Sistema per ordini online e fidelizzazione clienti",
+        notes: "Interessati a partire entro fine mese. Chiedono demo rapida e costi chiari.",
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "La Ruota Rossa",
+        city: "Bologna",
+        contact: "Sara Monti",
+        phone: "+39 051 555 0921",
+        email: "info@ruotarossa.example",
+        website: "",
+        status: "Da contattare",
+        priority: "Media",
+        value: 1200,
+        nextAction: nextDate(0),
+        need: "Gestione prenotazioni tavoli",
+        notes: "Arrivata da passaparola. Chiamare dopo le 15:00.",
+        updatedAt: new Date(Date.now() - 86400000).toISOString()
+      },
+      {
+        id: crypto.randomUUID(),
+        name: "Forno San Luca",
+        city: "Firenze",
+        contact: "Giulia Bianchi",
+        phone: "+39 055 555 3011",
+        email: "giulia@fornosanluca.example",
+        website: "https://fornosanluca.example",
+        status: "Cliente",
+        priority: "Alta",
+        value: 3600,
+        nextAction: nextDate(7),
+        need: "Upsell campagna marketing locale",
+        notes: "Cliente attivo. Proporre pacchetto recensioni e newsletter.",
+        updatedAt: new Date(Date.now() - 172800000).toISOString()
+      }
+    ];
+
+    let leads = loadLeads();
+    let selectedId = leads[0]?.id || null;
+    let activeView = "all";
+
+    const els = {
+      statTotal: document.querySelector("#statTotal"),
+      statTodo: document.querySelector("#statTodo"),
+      statWon: document.querySelector("#statWon"),
+      statValue: document.querySelector("#statValue"),
+      resultCount: document.querySelector("#resultCount"),
+      leadList: document.querySelector("#leadList"),
+      leadDetail: document.querySelector("#leadDetail"),
+      searchInput: document.querySelector("#searchInput"),
+      statusFilter: document.querySelector("#statusFilter"),
+      priorityFilter: document.querySelector("#priorityFilter"),
+      sortSelect: document.querySelector("#sortSelect"),
+      editLeadBtn: document.querySelector("#editLeadBtn"),
+      newLeadBtn: document.querySelector("#newLeadBtn"),
+      exportCsvBtn: document.querySelector("#exportCsvBtn"),
+      exportJsonBtn: document.querySelector("#exportJsonBtn"),
+      importBtn: document.querySelector("#importBtn"),
+      importFile: document.querySelector("#importFile"),
+      resetBtn: document.querySelector("#resetBtn"),
+      dialog: document.querySelector("#leadDialog"),
+      form: document.querySelector("#leadForm"),
+      dialogTitle: document.querySelector("#dialogTitle"),
+      deleteLeadBtn: document.querySelector("#deleteLeadBtn"),
+      closeDialogBtn: document.querySelector("#closeDialogBtn"),
+      cancelFormBtn: document.querySelector("#cancelFormBtn"),
+      toast: document.querySelector("#toast")
+    };
+
+    init();
+
+    function init() {
+      fillStatusSelects();
+      bindEvents();
+      render();
+    }
+
+    function fillStatusSelects() {
+      els.statusFilter.innerHTML = '<option value="">Tutti</option>' + statuses.map(s => `<option>${s}</option>`).join("");
+      document.querySelector("#status").innerHTML = statuses.map(s => `<option>${s}</option>`).join("");
+    }
+
+    function bindEvents() {
+      document.querySelectorAll(".nav button").forEach(button => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".nav button").forEach(item => item.classList.remove("active"));
+          button.classList.add("active");
+          activeView = button.dataset.view;
+          render();
+        });
+      });
+
+      [els.searchInput, els.statusFilter, els.priorityFilter, els.sortSelect].forEach(el => {
+        el.addEventListener("input", render);
+      });
+
+      els.newLeadBtn.addEventListener("click", () => openForm());
+      els.editLeadBtn.addEventListener("click", () => {
+        const lead = leads.find(item => item.id === selectedId);
+        if (lead) openForm(lead);
+      });
+      els.closeDialogBtn.addEventListener("click", closeForm);
+      els.cancelFormBtn.addEventListener("click", closeForm);
+      els.deleteLeadBtn.addEventListener("click", deleteCurrentLead);
+      els.form.addEventListener("submit", saveLeadFromForm);
+      els.exportCsvBtn.addEventListener("click", exportCsv);
+      els.exportJsonBtn.addEventListener("click", exportJson);
+      els.importBtn.addEventListener("click", () => els.importFile.click());
+      els.importFile.addEventListener("change", importJson);
+      els.resetBtn.addEventListener("click", resetDemo);
+    }
+
+    function render() {
+      saveLeads();
+      renderStats();
+      const filtered = getFilteredLeads();
+      if (!filtered.find(item => item.id === selectedId)) selectedId = filtered[0]?.id || leads[0]?.id || null;
+      renderList(filtered);
+      renderDetail();
+    }
+
+    function renderStats() {
+      const todo = leads.filter(lead => isTodo(lead)).length;
+      const won = leads.filter(lead => lead.status === "Cliente").length;
+      const value = leads.reduce((sum, lead) => sum + Number(lead.value || 0), 0);
+      els.statTotal.textContent = leads.length;
+      els.statTodo.textContent = todo;
+      els.statWon.textContent = won;
+      els.statValue.textContent = money(value);
+    }
+
+    function renderList(items) {
+      els.resultCount.textContent = `${items.length} risultati`;
+      if (!items.length) {
+        els.leadList.innerHTML = '<div class="empty">Nessuna pizzeria trovata con questi filtri.</div>';
+        return;
+      }
+
+      els.leadList.innerHTML = items.map(lead => `
+        <button class="lead ${lead.id === selectedId ? "active" : ""}" data-id="${lead.id}">
+          <div class="lead-row">
+            <div>
+              <h4>${escapeHtml(lead.name)}</h4>
+              <p>${escapeHtml([lead.city, lead.contact].filter(Boolean).join(" - "))}</p>
+            </div>
+            <span class="tag ${priorityClass(lead.priority)}">${escapeHtml(lead.priority)}</span>
+          </div>
+          <div class="tags">
+            <span class="tag ${statusClass(lead.status)}">${escapeHtml(lead.status)}</span>
+            <span class="tag">${money(Number(lead.value || 0))}</span>
+            <span class="tag ${isTodo(lead) ? "todo" : ""}">${formatDate(lead.nextAction) || "Nessuna azione"}</span>
+          </div>
+        </button>
+      `).join("");
+
+      els.leadList.querySelectorAll(".lead").forEach(button => {
+        button.addEventListener("click", () => {
+          selectedId = button.dataset.id;
+          render();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const lead = leads.find(item => item.id === selectedId);
+      els.editLeadBtn.disabled = !lead;
+      if (!lead) {
+        els.leadDetail.innerHTML = '<div class="empty">Seleziona una pizzeria o creane una nuova.</div>';
+        return;
+      }
+
+      const maps = lead.city ? `https://www.google.com/maps/search/${encodeURIComponent(lead.name + " " + lead.city)}` : "";
+      const website = normalizeUrl(lead.website);
+      els.leadDetail.innerHTML = `
+        <div class="detail-top">
+          <div>
+            <h3>${escapeHtml(lead.name)}</h3>
+            <p>${escapeHtml([lead.city, lead.contact].filter(Boolean).join(" - "))}</p>
+          </div>
+          <div class="tags">
+            <span class="tag ${statusClass(lead.status)}">${escapeHtml(lead.status)}</span>
+            <span class="tag ${priorityClass(lead.priority)}">${escapeHtml(lead.priority)}</span>
+          </div>
+        </div>
+
+        <div class="quick">
+          ${lead.phone ? `<a href="tel:${escapeAttr(lead.phone)}">Chiama</a>` : `<button disabled>Chiama</button>`}
+          ${lead.email ? `<a href="mailto:${escapeAttr(lead.email)}">Email</a>` : `<button disabled>Email</button>`}
+          ${maps ? `<a target="_blank" rel="noreferrer" href="${escapeAttr(maps)}">Mappa</a>` : `<button disabled>Mappa</button>`}
+        </div>
+
+        <div class="info-grid">
+          <div class="info"><small>Telefono</small><strong>${escapeHtml(lead.phone || "-")}</strong></div>
+          <div class="info"><small>Email</small><strong>${escapeHtml(lead.email || "-")}</strong></div>
+          <div class="info"><small>Sito/social</small><strong>${website ? `<a href="${escapeAttr(website)}" target="_blank" rel="noreferrer">${escapeHtml(lead.website)}</a>` : "-"}</strong></div>
+          <div class="info"><small>Valore stimato</small><strong>${money(Number(lead.value || 0))}</strong></div>
+          <div class="info"><small>Prossima azione</small><strong>${formatDate(lead.nextAction) || "-"}</strong></div>
+          <div class="info"><small>Ultima modifica</small><strong>${formatDateTime(lead.updatedAt)}</strong></div>
+        </div>
+
+        <div class="info">
+          <small>Esigenza</small>
+          <strong>${escapeHtml(lead.need || "-")}</strong>
+        </div>
+
+        <div>
+          <div class="panel-head" style="padding-left:0;padding-right:0;background:transparent;border-bottom:0;">
+            <h3>Note operative</h3>
+          </div>
+          <div class="timeline">
+            <div class="note">
+              <time>${formatDateTime(lead.updatedAt)}</time>
+              <div>${escapeHtml(lead.notes || "Nessuna nota inserita.").replace(/\n/g, "<br>")}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getFilteredLeads() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      const status = els.statusFilter.value;
+      const priority = els.priorityFilter.value;
+      const sort = els.sortSelect.value;
+
+      return leads
+        .filter(lead => {
+          if (activeView === "todo" && !isTodo(lead)) return false;
+          if (activeView === "won" && lead.status !== "Cliente") return false;
+          if (status && lead.status !== status) return false;
+          if (priority && lead.priority !== priority) return false;
+          if (!query) return true;
+          return [lead.name, lead.city, lead.contact, lead.phone, lead.email, lead.need, lead.notes]
+            .join(" ")
+            .toLowerCase()
+            .includes(query);
+        })
+        .sort((a, b) => {
+          if (sort === "name") return a.name.localeCompare(b.name, "it");
+          if (sort === "value") return Number(b.value || 0) - Number(a.value || 0);
+          if (sort === "updated") return new Date(b.updatedAt) - new Date(a.updatedAt);
+          return dateValue(a.nextAction) - dateValue(b.nextAction);
+        });
+    }
+
+    function openForm(lead = null) {
+      els.dialogTitle.textContent = lead ? "Modifica pizzeria" : "Nuova pizzeria";
+      els.deleteLeadBtn.style.display = lead ? "" : "none";
+      document.querySelector("#leadId").value = lead?.id || "";
+      document.querySelector("#name").value = lead?.name || "";
+      document.querySelector("#city").value = lead?.city || "";
+      document.querySelector("#contact").value = lead?.contact || "";
+      document.querySelector("#phone").value = lead?.phone || "";
+      document.querySelector("#email").value = lead?.email || "";
+      document.querySelector("#website").value = lead?.website || "";
+      document.querySelector("#status").value = lead?.status || "Nuovo lead";
+      document.querySelector("#priority").value = lead?.priority || "Media";
+      document.querySelector("#value").value = lead?.value || "";
+      document.querySelector("#nextAction").value = lead?.nextAction || "";
+      document.querySelector("#need").value = lead?.need || "";
+      document.querySelector("#notes").value = lead?.notes || "";
+      els.dialog.showModal();
+      setTimeout(() => document.querySelector("#name").focus(), 50);
+    }
+
+    function closeForm() {
+      els.dialog.close();
+    }
+
+    function saveLeadFromForm(event) {
+      event.preventDefault();
+      const id = document.querySelector("#leadId").value || crypto.randomUUID();
+      const existing = leads.find(lead => lead.id === id);
+      const next = {
+        id,
+        name: document.querySelector("#name").value.trim(),
+        city: document.querySelector("#city").value.trim(),
+        contact: document.querySelector("#contact").value.trim(),
+        phone: document.querySelector("#phone").value.trim(),
+        email: document.querySelector("#email").value.trim(),
+        website: document.querySelector("#website").value.trim(),
+        status: document.querySelector("#status").value,
+        priority: document.querySelector("#priority").value,
+        value: Number(document.querySelector("#value").value || 0),
+        nextAction: document.querySelector("#nextAction").value,
+        need: document.querySelector("#need").value.trim(),
+        notes: document.querySelector("#notes").value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (existing) {
+        leads = leads.map(lead => lead.id === id ? next : lead);
+        showToast("Pizzeria aggiornata.");
+      } else {
+        leads.unshift(next);
+        showToast("Pizzeria aggiunta.");
+      }
+      selectedId = id;
+      closeForm();
+      render();
+    }
+
+    function deleteCurrentLead() {
+      const id = document.querySelector("#leadId").value;
+      const lead = leads.find(item => item.id === id);
+      if (!lead) return;
+      if (!confirm(`Eliminare ${lead.name}?`)) return;
+      leads = leads.filter(item => item.id !== id);
+      selectedId = leads[0]?.id || null;
+      closeForm();
+      render();
+      showToast("Pizzeria eliminata.");
+    }
+
+    function exportCsv() {
+      const rows = [
+        ["Nome", "Citta", "Referente", "Telefono", "Email", "Sito", "Stato", "Priorita", "Valore", "Prossima azione", "Esigenza", "Note"],
+        ...leads.map(lead => [lead.name, lead.city, lead.contact, lead.phone, lead.email, lead.website, lead.status, lead.priority, lead.value, lead.nextAction, lead.need, lead.notes])
+      ];
+      download("crm-pizzerie.csv", rows.map(row => row.map(csvCell).join(",")).join("\n"), "text/csv;charset=utf-8");
+      showToast("CSV esportato.");
+    }
+
+    function exportJson() {
+      download("crm-pizzerie-backup.json", JSON.stringify(leads, null, 2), "application/json");
+      showToast("Backup JSON esportato.");
+    }
+
+    async function importJson(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const data = JSON.parse(await file.text());
+        if (!Array.isArray(data)) throw new Error("Formato non valido");
+        leads = data.map(item => ({
+          id: item.id || crypto.randomUUID(),
+          name: item.name || "Senza nome",
+          city: item.city || "",
+          contact: item.contact || "",
+          phone: item.phone || "",
+          email: item.email || "",
+          website: item.website || "",
+          status: statuses.includes(item.status) ? item.status : "Nuovo lead",
+          priority: ["Alta", "Media", "Bassa"].includes(item.priority) ? item.priority : "Media",
+          value: Number(item.value || 0),
+          nextAction: item.nextAction || "",
+          need: item.need || "",
+          notes: item.notes || "",
+          updatedAt: item.updatedAt || new Date().toISOString()
+        }));
+        selectedId = leads[0]?.id || null;
+        render();
+        showToast("Import completato.");
+      } catch (error) {
+        showToast("File JSON non valido.");
+      } finally {
+        event.target.value = "";
+      }
+    }
+
+    function resetDemo() {
+      if (!confirm("Ripristinare i dati demo? I dati attuali saranno sostituiti.")) return;
+      leads = structuredClone(demoLeads).map(item => ({ ...item, id: crypto.randomUUID() }));
+      selectedId = leads[0]?.id || null;
+      render();
+      showToast("Dati demo ripristinati.");
+    }
+
+    function loadLeads() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return Array.isArray(saved) && saved.length ? saved : structuredClone(demoLeads);
+      } catch {
+        return structuredClone(demoLeads);
+      }
+    }
+
+    function saveLeads() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+    }
+
+    function isTodo(lead) {
+      if (lead.status === "Cliente" || lead.status === "Perso") return false;
+      if (!lead.nextAction) return true;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return new Date(lead.nextAction) <= today;
+    }
+
+    function nextDate(days) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function dateValue(value) {
+      return value ? new Date(value).getTime() : Number.MAX_SAFE_INTEGER;
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value || 0);
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      return new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "-";
+      return new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
+    }
+
+    function priorityClass(priority) {
+      return priority === "Alta" ? "hot" : priority === "Media" ? "warm" : "cold";
+    }
+
+    function statusClass(status) {
+      if (status === "Cliente") return "ok";
+      if (status === "Perso") return "cold";
+      if (status === "Da contattare") return "todo";
+      if (status === "Negoziazione" || status === "Preventivo inviato") return "warm";
+      return "";
+    }
+
+    function normalizeUrl(value) {
+      if (!value) return "";
+      return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? "").replace(/"/g, '""')}"`;
+    }
+
+    function download(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.append(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+  </script>
+</body>
+</html>
