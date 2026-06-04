@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1e7a57"/>
+  <circle cx="256" cy="256" r="164" fill="#f6f4ef"/>
+  <path d="M162 314c30-92 70-142 114-150 37-7 71 18 92 69 13 31 18 63 18 81H162Z" fill="#c43d2e"/>
+  <path d="M188 288h170c-5-25-15-52-33-72-16-18-34-25-53-21-30 6-59 37-84 93Z" fill="#f1c27b"/>
+  <circle cx="244" cy="246" r="17" fill="#1e7a57"/>
+  <circle cx="310" cy="258" r="15" fill="#1e7a57"/>
+  <circle cx="279" cy="217" r="12" fill="#1e7a57"/>
+  <text x="256" y="390" text-anchor="middle" font-family="Arial, sans-serif" font-size="88" font-weight="900" fill="#20252b">CRM</text>
+</svg>

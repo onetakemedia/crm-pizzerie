@@ -1,0 +1,19 @@
+{
+  "name": "CRM Pizzerie",
+  "short_name": "CRM Pizzerie",
+  "description": "Gestionale per contattare e seguire pizzerie in pipeline commerciale.",
+  "start_url": "./crm-pizzerie-rinnovato.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#1e7a57",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
